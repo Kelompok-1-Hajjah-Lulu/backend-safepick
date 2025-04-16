@@ -1,15 +1,13 @@
 from flask import Blueprint, request, jsonify
-from .logic import get_prediction
 from .models import PredictionLog
 from . import db
+from .logic import get_prediction, get_prediction_all
 
 main = Blueprint("main", __name__)
-
 
 @main.route("/")
 def hello_world():
     return "<p>Hello, Safe Pick!</p>"
-
 
 @main.route("/predict", methods=["POST"])
 def predict():
@@ -46,3 +44,17 @@ def predict():
 def get_logs():
     logs = PredictionLog.query.order_by(PredictionLog.timestamp.desc()).limit(100).all()
     return jsonify([log.to_dict() for log in logs])
+
+@main.route("/predicts-all", methods=["POST"])
+def predict_all():
+    data = request.get_json()
+    amount = data.get("amount")
+
+    if not amount:
+        return jsonify({"error": "amount and tenor required"}), 400
+    
+    result = get_prediction_all(amount)
+    
+    return jsonify(result)
+
+

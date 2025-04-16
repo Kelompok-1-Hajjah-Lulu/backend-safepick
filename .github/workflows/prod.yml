@@ -43,7 +43,8 @@ jobs:
           docker run -d \
             --name safepick-backend-prod \
             --network safepick-prod-network \
-            -p 8080:5000 \
+            --env-file ~/safepick-prod/safepick-service/.env \
+            -p 8008:5000 \
             -e DATABASE_URL=${{ secrets.PROD_DATABASE_URL }} \
             --restart unless-stopped \
             ${{ secrets.DOCKERHUB_USERNAME }}/safepick-backend:prod

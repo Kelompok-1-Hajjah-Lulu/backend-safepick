@@ -1,6 +1,6 @@
 FROM python:3.11-slim
 
-WORKDIR /run
+WORKDIR /app
 
 COPY requirements.txt .
 
@@ -11,3 +11,5 @@ COPY . .
 EXPOSE 5000
 
 CMD [ "python", "run.py" ]
+
+# CMD ["gunicorn","-w","4","-b","0.0.0.0:5000","run:app"]

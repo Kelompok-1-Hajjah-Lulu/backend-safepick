@@ -46,7 +46,7 @@ def get_prediction(amount, tenure):
         "gold_gram": round(gold_gram, 4),
         "predicted_buyback": round(predicted_buyback, 2),
         "gold_return_rate": round(gold_return_rate, 2),
-        "deposit_return_rate ": round(deposit_return_rate, 2),
+        "deposit_return_rate": round(deposit_return_rate, 2),
     }
 
 

@@ -43,6 +43,7 @@ jobs:
           docker run -d \
             --name safepick-backend-staging \
             --network safepick-staging-network \
+            --env-file ~/safepick-staging/safepick-service/.env \
             -p 8080:5000 \
             --restart unless-stopped \
             ${{ secrets.DOCKERHUB_USERNAME }}/safepick-backend:staging

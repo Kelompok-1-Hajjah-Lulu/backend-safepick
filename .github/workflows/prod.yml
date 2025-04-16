@@ -45,6 +45,5 @@ jobs:
             --network safepick-prod-network \
             --env-file ~/safepick-prod/safepick-service/.env \
             -p 8008:5000 \
-            -e DATABASE_URL=${{ secrets.PROD_DATABASE_URL }} \
             --restart unless-stopped \
             ${{ secrets.DOCKERHUB_USERNAME }}/safepick-backend:prod

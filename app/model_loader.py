@@ -39,7 +39,7 @@ def predict_future_prices(df_weekly, model, pipeline, tenure):
         X = prepare_input(df_temp, pipeline)
         pred_scaled = model.predict(X, verbose=0)
         pred_price = scaler.inverse_transform(pred_scaled)[0][0]
-        results.append(pred_price)
+        results.append(float(pred_price))
 
         last_date = df_temp.index[-1]
         next_row = pd.DataFrame(

@@ -5,18 +5,18 @@ import pandas as pd
 
 
 def load_model_and_pipeline():
-    with open("models/pipeline.pkl", "rb") as f:
+    with open("models/pipeline_v2.pkl", "rb") as f:
         pipeline = pickle.load(f)
-    with open("models/gold_1week_architecture.pkl", "rb") as f:
+    with open("models/gold_1week_architecture_v2.pkl", "rb") as f:
         model_json = pickle.load(f)
-    with open("models/gold_1week_weights.pkl", "rb") as f:
+    with open("models/gold_1week_weights_v2.pkl", "rb") as f:
         weights = pickle.load(f)
     model = model_from_json(model_json)
     model.set_weights(weights)
     return model, pipeline
 
 
-def prepare_input(df, pipeline, input_window=13, diff_lag=2):
+def prepare_input(df, pipeline, input_window=13, diff_lag=4):
     prices_series = df.iloc[:, 0]
     diff = prices_series - prices_series.shift(diff_lag)
     df_features = pd.DataFrame({"price": prices_series, "diff_4w": diff.dropna()})

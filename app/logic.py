@@ -19,7 +19,7 @@ def get_prediction(amount, tenure):
     model, pipeline = load_model_and_pipeline()
     df = pd.read_csv(DATA_PATH, index_col=0)
     df.index = pd.to_datetime(df.index)
-    df_weekly = df.resample("W").mean().ffill()
+    df_weekly = df.resample("W").mean().ffill().iloc[-17:]
 
     # Predict gold price
     predicted_prices = predict_future_prices(df_weekly, model, pipeline, tenure)

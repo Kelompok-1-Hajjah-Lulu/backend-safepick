@@ -19,6 +19,6 @@ def predict():
         return jsonify({"error": "amount and tenor required"}), 400
 
     result = get_prediction(amount, tenor)
-    result["profit_gold"] = float(result["profit_gold"])
-    result["predicted_gold_price"] = float(result["predicted_gold_price"])
+    result["profit_gold"] = round(float(result["profit_gold"]), 2)
+    result["predicted_gold_price"] = round(float(result["predicted_gold_price"]), 2)
     return jsonify(result)

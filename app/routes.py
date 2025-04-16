@@ -1,5 +1,7 @@
 from flask import Blueprint, request, jsonify
-from .logic import get_prediction,get_prediction_all
+from .models import PredictionLog
+from . import db
+from .logic import get_prediction, get_prediction_all
 
 main = Blueprint("main", __name__)
 
@@ -9,6 +11,7 @@ def hello_world():
 
 @main.route("/predict", methods=["POST"])
 def predict():
+    ip_address = request.headers.get("X-Forwarded-For", request.remote_addr)
     data = request.get_json()
     amount = data.get("amount")
     tenor = data.get("tenor")
@@ -19,8 +22,28 @@ def predict():
     result = get_prediction(amount, tenor)
     result["profit_gold"] = round(float(result["profit_gold"]), 2)
     result["predicted_gold_price"] = round(float(result["predicted_gold_price"]), 2)
-    result["gold_gram"] = round(float(result["gold_gram"]), 4)
+
+    # store prediction log to db for future analysis
+    log = PredictionLog(
+        amount=amount,
+        tenor=tenor,
+        predicted_price=result["predicted_gold_price"],
+        profit_gold=result["profit_gold"],
+        profit_deposit=result["profit_deposit"],
+        recommendation=result["recommend"],
+        ip_address=ip_address,
+    )
+
+    db.session.add(log)
+    db.session.commit()
+
     return jsonify(result)
+
+
+@main.route("/logs", methods=["GET"])
+def get_logs():
+    logs = PredictionLog.query.order_by(PredictionLog.timestamp.desc()).limit(100).all()
+    return jsonify([log.to_dict() for log in logs])
 
 @main.route("/predicts-all", methods=["POST"])
 def predict_all():
@@ -33,4 +56,5 @@ def predict_all():
     result = get_prediction_all(amount)
     
     return jsonify(result)
+
 

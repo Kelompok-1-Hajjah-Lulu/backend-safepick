@@ -40,6 +40,22 @@ def predict():
     )
 
     if cached_log:
+        # still log for future analysis
+        log = PredictionLog(
+            amount=amount,
+            tenor=tenor,
+            predicted_price=cached_log.predicted_price,
+            predicted_buyback=cached_log.predicted_buyback,
+            gold_gram=cached_log.gold_gram,
+            profit_gold=cached_log.profit_gold,
+            profit_deposit=cached_log.profit_deposit,
+            gold_return_rate=cached_log.gold_return_rate,
+            deposit_return_rate=cached_log.deposit_return_rate,
+            recommendation=cached_log.recommendation,
+            ip_address=ip_address,
+        )
+        db.session.add(log)
+        db.session.commit()
         return jsonify(cached_log.to_predict_result_dict())
 
     # --- no cache: use machine learning model to predict ---

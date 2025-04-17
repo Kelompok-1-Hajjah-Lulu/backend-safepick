@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from .models import PredictionLog
+from .models import PredictionLog, PredictionAllCache
 from . import db
 from .logic import get_prediction, get_prediction_all
 from datetime import datetime, time
@@ -96,8 +96,31 @@ def predict_all():
     amount = data.get("amount")
 
     if not amount:
-        return jsonify({"error": "amount and tenor required"}), 400
+        return jsonify({"error": "amount"}), 400
+
+    # --- Caching logic: check if prediction already exists in db for today after 2 AM UTC (9 AM GMT+7) ---
+    now = datetime.utcnow()
+    today_2am_utc = datetime.combine(now.date(), time(2, 0))
+
+    cached = (
+        PredictionAllCache.query.filter(
+            and_(
+                PredictionAllCache.amount == amount,
+                PredictionAllCache.timestamp >= today_2am_utc,
+            )
+        )
+        .order_by(PredictionAllCache.timestamp.desc())
+        .first()
+    )
+
+    if cached:
+        return jsonify(cached.result_json)
 
     result = get_prediction_all(amount)
+
+    # Save for future cache
+    cache = PredictionAllCache(amount=amount, result_json=result)
+    db.session.add(cache)
+    db.session.commit()
 
     return jsonify(result)

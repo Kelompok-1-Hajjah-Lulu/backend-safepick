@@ -1,9 +1,18 @@
 from .model_loader import load_model_and_pipeline, predict_future_prices
+from .models import GoldPrice
+from sqlalchemy import desc
+from . import db
 import pandas as pd
 
 GRR = 9.050577 / 100
 BUYBACK_DIFF = 149419.3548
-DATA_PATH = "data/antam_price_2025_4_14.csv"
+
+
+def get_gold_price_dataframe():
+    prices = GoldPrice.query.order_by(GoldPrice.date).all()
+    df = pd.DataFrame([(p.date, p.price) for p in prices], columns=["date", "price"])
+    df.set_index("date", inplace=True)
+    return df
 
 
 def get_nisbah(amount, tenure):
@@ -29,25 +38,24 @@ def get_nisbah(amount, tenure):
 
 def get_prediction(amount, tenure):
     model, pipeline = load_model_and_pipeline()
-    df = pd.read_csv(DATA_PATH, index_col=0)
+    df = get_gold_price_dataframe()
     df.index = pd.to_datetime(df.index)
     df_weekly = df.resample("W").mean().ffill().iloc[-17:]
 
     # Predict gold price
-
     predicted_prices = predict_future_prices(df_weekly, model, pipeline, tenure)
-    predicted_gold_price = predicted_prices[-1]
-    predicted_buyback = predicted_gold_price - BUYBACK_DIFF
+    predicted_gold_price = float(predicted_prices[-1])
+    predicted_buyback = float(predicted_gold_price - BUYBACK_DIFF)
 
-    latest_gold_price = df.iloc[-1, 0]
-    gold_gram = amount / latest_gold_price
-    gold_profit = (gold_gram * predicted_buyback) - amount
+    latest_gold_price = float(df.iloc[-1, 0])
+    gold_gram = float(amount / latest_gold_price)
+    gold_profit = float((gold_gram * predicted_buyback) - amount)
 
     nisbah = get_nisbah(amount, tenure)
-    deposit_profit = (GRR * nisbah * amount / 12) * tenure
+    deposit_profit = float((GRR * nisbah * amount / 12) * tenure)
 
-    gold_return_rate = (gold_profit / amount) * 100
-    deposit_return_rate = (deposit_profit / amount) * 100
+    gold_return_rate = float((gold_profit / amount) * 100)
+    deposit_return_rate = float((deposit_profit / amount) * 100)
 
     recommendation = "gold" if gold_profit > deposit_profit else "deposit"
 
@@ -65,33 +73,33 @@ def get_prediction(amount, tenure):
 
 def get_prediction_all(amount):
     model, pipeline = load_model_and_pipeline()
-    df = pd.read_csv(DATA_PATH, index_col=0)
+    df = get_gold_price_dataframe()
     df.index = pd.to_datetime(df.index)
     df_weekly = df.resample("W").mean().ffill().iloc[-17:]
     tenure_one_year = 12
-    latest_gold_price = df.iloc[-1, 0]
+    latest_gold_price = float(df.iloc[-1, 0])
 
     # Predict gold price
     predicted_prices = predict_future_prices(
         df_weekly, model, pipeline, tenure_one_year
     )
-    gold_gram = amount / latest_gold_price
+    gold_gram = float(amount / latest_gold_price)
     results = {}
 
     results["gold_gram"] = round(gold_gram, 4)
 
     for tenure in [3, 12, 25, 51]:
-        predicted_gold_price = predicted_prices[tenure]
+        predicted_gold_price = float(predicted_prices[tenure])
         predicted_buyback = predicted_gold_price - BUYBACK_DIFF
 
-        gold_profit = (gold_gram * predicted_buyback) - amount
+        gold_profit = float((gold_gram * predicted_buyback) - amount)
 
         tenure_months = {3: 1, 12: 3, 25: 6, 51: 12}.get(tenure)
         nisbah = get_nisbah(amount, tenure_months)
-        deposit_profit = (GRR * nisbah * amount / 12) * tenure_months
+        deposit_profit = float((GRR * nisbah * amount / 12) * tenure_months)
 
-        gold_return_rate = (gold_profit / amount) * 100
-        deposit_return_rate = (deposit_profit / amount) * 100
+        gold_return_rate = float((gold_profit / amount) * 100)
+        deposit_return_rate = float((deposit_profit / amount) * 100)
 
         result = {}
         result["profit_gold"] = round(gold_profit, 2)
@@ -105,6 +113,3 @@ def get_prediction_all(amount):
         results[f"tenure_{tenure_months}"] = result
 
     return results
-
-# def buyback_price():
-    

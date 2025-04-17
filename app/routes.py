@@ -127,17 +127,19 @@ def predict_all():
 
     return jsonify(result)
 
+
 @main.route("/gold-price/latest", methods=["GET"])
 def get_latest_gold_price():
     latest = GoldPrice.query.order_by(GoldPrice.date.desc()).first()
-    buyback_price = latest.price - BUYBACK_DIFF 
-    if latest:
-        return jsonify({
-            "date": latest.date.isoformat(), 
+    if not latest:
+        return jsonify({"error": "No data"}), 404
+
+    buyback_price = latest.price - BUYBACK_DIFF
+
+    return jsonify(
+        {
+            "date": latest.date.isoformat(),
             "price": latest.price,
-            "buyback_price":round(buyback_price,2)
-        })
-    else:
-        return jsonify({"error": "No data found"}), 404
-    
-    
+            "buyback_price": round(buyback_price, 2),
+        }
+    )

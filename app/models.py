@@ -52,3 +52,9 @@ class PredictionAllCache(db.Model):
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     amount = db.Column(db.Float, nullable=False)
     result_json = db.Column(db.JSON, nullable=False)
+
+
+class GoldPrice(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.Date, nullable=False, unique=True)
+    price = db.Column(db.Float, nullable=False)

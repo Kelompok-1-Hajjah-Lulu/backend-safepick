@@ -58,3 +58,17 @@ class GoldPrice(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.Date, nullable=False, unique=True)
     price = db.Column(db.Float, nullable=False)
+    
+class ApplicationForm(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    full_name = db.Column(db.String(150), nullable=False)
+    nomor_hp = db.Column(db.String(20), nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    kecamatan = db.Column(db.String(50), nullable=False)
+    kota = db.Column(db.String(50), nullable=False)
+    provinsi = db.Column(db.String(50), nullable=False)
+    tipe_produk = db.Column(db.String(50), nullable=False)
+    nominal = db.Column(db.Float, nullable=False)
+    jangka_waktu = db.Column(db.String(10), nullable=False)
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
+    

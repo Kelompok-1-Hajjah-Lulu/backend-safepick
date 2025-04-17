@@ -9,12 +9,12 @@ class PredictionLog(db.Model):
     amount = db.Column(db.Float, nullable=False)
     tenor = db.Column(db.Integer, nullable=False)
     predicted_price = db.Column(db.Float, nullable=False)
-    predicted_buyback = db.Column(db.Float, nullable=True)
-    gold_gram = db.Column(db.Float, nullable=True)
+    predicted_buyback = db.Column(db.Float, nullable=False)
+    gold_gram = db.Column(db.Float, nullable=False)
     profit_gold = db.Column(db.Float, nullable=False)
     profit_deposit = db.Column(db.Float, nullable=False)
-    gold_return_rate = db.Column(db.Float, nullable=True)
-    deposit_return_rate = db.Column(db.Float, nullable=True)
+    gold_return_rate = db.Column(db.Float, nullable=False)
+    deposit_return_rate = db.Column(db.Float, nullable=False)
     recommendation = db.Column(db.String(10), nullable=False)
 
     def to_dict(self):

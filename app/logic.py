@@ -1,18 +1,30 @@
 from .model_loader import load_model_and_pipeline, predict_future_prices
 import pandas as pd
 
-GRR = 8.991301 / 100  # taruh di database
+GRR = 9.050577 / 100
 BUYBACK_DIFF = 149419.3548
 DATA_PATH = "data/antam_price_2025_4_14.csv"
 
 
 def get_nisbah(amount, tenure):
-    if amount < 1000000000:
-        return 0.25 if tenure <= 3 else 0.26
-    elif amount < 5000000000:
-        return 0.26 if tenure <= 3 else 0.27
-    else:
-        return 0.29
+    # menggunakan rate di byond untuk <12 bulan
+    if tenure < 12:
+        if tenure <= 3 and amount < 100_000_000:
+            return 0.28
+        elif (tenure == 6 and amount < 100_000_000) or (amount < 1_000_000_000):
+            return 0.29
+        elif (tenure == 6 and amount < 1_000_000_000) or (
+            amount == 1_000_000_000 and tenure <= 3
+        ):
+            return 0.3
+        elif tenure == 6 and amount == 1_000_000_000:
+            return 0.31
+    # menggunakan rate di cabang untuk tenor 12 bulan
+    elif tenure == 12:
+        if amount < 1_000_000_000:
+            return 0.26
+        elif amount == 1_000_000_000:
+            return 0.27
 
 
 def get_prediction(amount, tenure):

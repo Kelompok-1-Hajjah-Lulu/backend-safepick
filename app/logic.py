@@ -85,8 +85,8 @@ def get_prediction_all(amount):
         result["predicted_gold_price"] = round(predicted_gold_price, 2)
         result["predicted_buyback"] = round(predicted_buyback, 2)
         result["tenure"] = tenure_months
-        result["gold_return_rate "] = round(gold_return_rate, 2)
-        result["deposit_return_rate "] = round(deposit_return_rate, 2)
+        result["gold_return_rate"] = round(gold_return_rate, 2)
+        result["deposit_return_rate"] = round(deposit_return_rate, 2)
 
         results[f"tenure_{tenure_months}"] = result
 

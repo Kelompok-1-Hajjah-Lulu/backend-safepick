@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from .models import PredictionLog, PredictionAllCache, GoldPrice
+from .models import PredictionLog, PredictionAllCache, GoldPrice, ApplicationForm
 from . import db
 from .logic import get_prediction, get_prediction_all
 from datetime import datetime, time
@@ -143,3 +143,30 @@ def get_latest_gold_price():
             "buyback_price": round(buyback_price, 2),
         }
     )
+    
+@main.route("/application-form", methods=["POST"])
+def create_application_form():
+    data = request.get_json()
+    
+    try:
+        new_entry = ApplicationForm(
+            full_name=data['full_name'],
+            nomor_hp=data['nomor_hp'],
+            email=data['email'],
+            kecamatan=data['kecamatan'],
+            kota=data['kota'],
+            provinsi=data['provinsi'],
+            tipe_produk=data['tipe_produk'],
+            nominal=data['nominal'],
+            jangka_waktu=data['jangka_waktu']
+        )
+        db.session.add(new_entry)
+        db.session.commit()
+        return jsonify({"message": "Application form submitted succesfully", "id": new_entry.id}), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+    
+
+
+    
+    

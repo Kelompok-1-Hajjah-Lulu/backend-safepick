@@ -1,9 +1,11 @@
 from flask import Blueprint, request, jsonify
-from .models import PredictionLog, PredictionAllCache
+from .models import PredictionLog, PredictionAllCache, GoldPrice
 from . import db
 from .logic import get_prediction, get_prediction_all
 from datetime import datetime, time
 from sqlalchemy import and_
+
+BUYBACK_DIFF = 149419.3548
 
 main = Blueprint("main", __name__)
 
@@ -124,3 +126,18 @@ def predict_all():
     db.session.commit()
 
     return jsonify(result)
+
+@main.route("/gold-price/latest", methods=["GET"])
+def get_latest_gold_price():
+    latest = GoldPrice.query.order_by(GoldPrice.date.desc()).first()
+    buyback_price = latest.price - BUYBACK_DIFF 
+    if latest:
+        return jsonify({
+            "date": latest.date.isoformat(), 
+            "price": latest.price,
+            "buyback_price":round(buyback_price,2)
+        })
+    else:
+        return jsonify({"error": "No data found"}), 404
+    
+    

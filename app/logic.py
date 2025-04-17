@@ -105,3 +105,6 @@ def get_prediction_all(amount):
         results[f"tenure_{tenure_months}"] = result
 
     return results
+
+# def buyback_price():
+    

@@ -45,3 +45,10 @@ class PredictionLog(db.Model):
             "profit_gold": self.profit_gold,
             "recommend": self.recommendation,
         }
+
+
+class PredictionAllCache(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    amount = db.Column(db.Float, nullable=False)
+    result_json = db.Column(db.JSON, nullable=False)

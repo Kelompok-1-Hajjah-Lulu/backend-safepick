@@ -39,7 +39,8 @@ def get_prediction(amount, tenure):
     predicted_gold_price = predicted_prices[-1]
     predicted_buyback = predicted_gold_price - BUYBACK_DIFF
 
-    gold_gram = amount / 1896000
+    latest_gold_price = df.iloc[-1, 0]
+    gold_gram = amount / latest_gold_price
     gold_profit = (gold_gram * predicted_buyback) - amount
 
     nisbah = get_nisbah(amount, tenure)
@@ -68,12 +69,13 @@ def get_prediction_all(amount):
     df.index = pd.to_datetime(df.index)
     df_weekly = df.resample("W").mean().ffill().iloc[-17:]
     tenure_one_year = 12
+    latest_gold_price = df.iloc[-1, 0]
 
     # Predict gold price
     predicted_prices = predict_future_prices(
         df_weekly, model, pipeline, tenure_one_year
     )
-    gold_gram = amount / 1896000
+    gold_gram = amount / latest_gold_price
     results = {}
 
     results["gold_gram"] = round(gold_gram, 4)

@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
 
-load_dotenv(".env.staging")
+load_dotenv(".env")
 
 from flask import Flask
 from flask_cors import CORS

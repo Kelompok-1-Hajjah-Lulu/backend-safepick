@@ -1,0 +1,8 @@
+/model_env
+/__pycache__
+/app/__pycache__
+.env
+.env.*
+!*.example
+# Alembic migration cache or state files
+migrations/__pycache__/
